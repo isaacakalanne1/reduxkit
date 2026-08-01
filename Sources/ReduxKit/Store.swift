@@ -15,7 +15,7 @@ import SwiftUI
 ///   - State: The current state of the application.
 ///   - Action: The action which determines how the Middleware should behave (typically an enum).
 ///   - Environment: Any object outside of the Redux system. These are it's dependancies such as: local storage, repository.
-public class Store<State: Equatable, Action: Sendable, Environment>: ObservableObject {
+public class Store<State: Equatable & Sendable, Action: Sendable, Environment: Sendable>: ObservableObject {
 
     /// The current state of the application
     @Published public private(set) var state: State
