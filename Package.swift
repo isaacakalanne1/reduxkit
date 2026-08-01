@@ -6,16 +6,18 @@ import PackageDescription
 let package = Package(
     name: "ReduxKit",
     platforms: [
-        .iOS("17.4")
+        .iOS("17.4"),
+        .macOS("10.15"),
     ],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
             name: "ReduxKit",
-            targets: ["ReduxKit"]),
+            targets: ["ReduxKit"]
+        ),
     ],
     dependencies: [
-        .package(url: "https://github.com/pointfreeco/combine-schedulers", "0.9.0"..<"1.0.0")
+        .package(url: "https://github.com/pointfreeco/combine-schedulers", "0.9.0" ..< "1.0.0"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -23,7 +25,7 @@ let package = Package(
         .target(
             name: "ReduxKit",
             dependencies: [
-                .product(name: "CombineSchedulers", package: "combine-schedulers")
+                .product(name: "CombineSchedulers", package: "combine-schedulers"),
             ]
         ),
         .testTarget(
