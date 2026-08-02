@@ -13,8 +13,7 @@ import SwiftUI
 @available(macCatalyst 14.0, *)
 @available(tvOS 14.0, *)
 @available(watchOS 7.0, *)
-extension StateObject {
-    
+public extension StateObject {
     /// Creates a new state object with an initial wrapped value.
     ///
     /// ### Important Redux Notes
@@ -55,7 +54,7 @@ extension StateObject {
     /// ```
     ///
     /// - Parameter buildWrappedValue: A closure that initializes all objects related to a state object.
-    public init(buildWrappedValue: @escaping () -> ObjectType) {
+    init(buildWrappedValue: @escaping () -> ObjectType) {
         self.init(wrappedValue: buildWrappedValue())
     }
 }

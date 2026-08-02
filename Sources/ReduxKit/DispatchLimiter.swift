@@ -6,8 +6,8 @@
 //
 
 import Combine
-import Foundation
 import CombineSchedulers
+import Foundation
 
 /// This object is intended to be used within the UI layer to limit the amount of times an action can be dispatched to the store by the UI
 /// It must be held as @StateObject in your SwiftUI view so that the object is not recreated when the view is redrawn
@@ -22,7 +22,7 @@ import CombineSchedulers
 /// })
 /// ```
 public class DispatchLimiter: ObservableObject {
-    let dispatchPublisher: PassthroughSubject<(() -> Void), Never> = .init()
+    let dispatchPublisher: PassthroughSubject<() -> Void, Never> = .init()
     var cancellable: AnyCancellable!
     let waitPeriod: TimeInterval
 

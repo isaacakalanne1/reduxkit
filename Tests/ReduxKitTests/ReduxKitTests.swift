@@ -1,5 +1,5 @@
-import XCTest
 @testable import ReduxKit
+import XCTest
 
 final class ReduxKitTests: XCTestCase {
     func testExample() throws {
