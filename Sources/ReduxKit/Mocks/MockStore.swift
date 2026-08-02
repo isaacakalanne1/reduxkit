@@ -5,13 +5,14 @@
 //  Created by Isaac Akalanne on 19/09/2025.
 //
 
-import Combine
 import Foundation
+import Combine
 
 /// A mock version of the Redux Store
 ///
 /// Allows the Store to be mocked and interrogated in tests. This is intended to be used in testing only.
-public class MockStore<State: Equatable & Sendable, Action: Sendable, Environment: Sendable>: Store<State, Action, Environment>, @unchecked Sendable {
+public class MockStore<State: Equatable, Action: Sendable, Environment>: Store<State, Action, Environment>, @unchecked Sendable {
+
     /// The last action to be dispatched by the ``MockStore``
     public var lastDispatchedAction = CurrentValueSubject<Action?, Never>(nil)
 
@@ -22,15 +23,15 @@ public class MockStore<State: Equatable & Sendable, Action: Sendable, Environmen
     ///
     /// - Parameters:
     ///   - action: The action to be handled by the ``Reducer`` and ``Middleware``
-    override public func dispatch(_ action: Action) {
+    public override func dispatch(_ action: Action) {
         dispatchedActions.append(action)
         lastDispatchedAction.send(action)
-
+        
         super.dispatch(action)
     }
-
+    
     // MARK: Async Action Fulfillment for Subscriptions
-
+    
     /// Await the fulfillment of one or more actions.
     ///
     /// ```swift
@@ -54,18 +55,18 @@ public class MockStore<State: Equatable & Sendable, Action: Sendable, Environmen
         let task = Task {
             await self.processFulfillment(actions: action)
         }
-
+        
         // Execute arbitrary code. This is where test behavior
         // after publisher setup should exist.
         Task {
             try await Task.sleep(nanoseconds: 10 * NSEC_PER_MSEC)
             await testBehavior()
         }
-
+        
         // Assure the task completes.
         _ = await task.result
     }
-
+    
     /// Await the fulfillment of one or more actions with a timeout.
     ///
     /// ```swift
@@ -100,21 +101,21 @@ public class MockStore<State: Equatable & Sendable, Action: Sendable, Environmen
             }
             return remaining
         }
-
+        
         Task {
             try await Task.sleep(nanoseconds: UInt64(timeout) * NSEC_PER_SEC)
             task.cancel()
         }
-
+        
         // Execute arbitrary test code. This is used to ensure
         Task {
             try await Task.sleep(nanoseconds: 10 * NSEC_PER_MSEC)
             await testBehavior()
         }
-
+        
         return try await task.value
     }
-
+    
     /// Await the fulfillment of one or more actions.
     ///
     /// - Parameter actions: The unordered list of expected actions.
@@ -129,7 +130,7 @@ public class MockStore<State: Equatable & Sendable, Action: Sendable, Environmen
             if let match = pendingFulfillment.firstIndex(where: { $0 == value }) {
                 pendingFulfillment.remove(at: match)
             }
-
+            
             // Exit/End the AsyncSequence's await if all pending items have been found.
             if pendingFulfillment.isEmpty {
                 break

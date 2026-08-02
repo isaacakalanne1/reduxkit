@@ -3,8 +3,8 @@
 //  This software is confidential and proprietary information.
 //
 
-import Combine
 import Foundation
+import Combine
 import SwiftUI
 
 /// The `Store` is the heart of the `Redux` architecture. It is the centralised location that holds the `Application State`.
@@ -16,6 +16,7 @@ import SwiftUI
 ///   - Action: The action which determines how the Middleware should behave (typically an enum).
 ///   - Environment: Any object outside of the Redux system. These are it's dependancies such as: local storage, repository.
 public class Store<State: Equatable & Sendable, Action: Sendable, Environment: Sendable>: ObservableObject {
+
     /// The current state of the application
     @Published public private(set) var state: State
 
@@ -45,7 +46,7 @@ public class Store<State: Equatable & Sendable, Action: Sendable, Environment: S
     /// ```
 
     public var subscriptions: Set<AnyCancellable> = []
-
+    
     /// Subscribe publishers
     ///
     /// In the case where you need to observe changes in your environment, use this function.
@@ -90,13 +91,12 @@ public class Store<State: Equatable & Sendable, Action: Sendable, Environment: S
                 reducer: @escaping Reducer<State, Action>,
                 environment: Environment,
                 middleware: @escaping Middleware<State, Action, Environment>,
-                subscriber: OnSubscribe<Store, Environment> = { _, _ in })
-    {
-        state = initial
+                subscriber: OnSubscribe<Store, Environment> = { _, _ in }) {
+        self.state = initial
         self.reducer = reducer
         self.environment = environment
         self.middleware = middleware
-
+        
         subscriber(self, environment)
     }
 
@@ -110,15 +110,15 @@ public class Store<State: Equatable & Sendable, Action: Sendable, Environment: S
             self.dispatch(self.state, action)
         }
     }
-
+    
     @MainActor
     private func dispatch(_ currentState: State, _ action: Action) {
-        let newState = reducer(currentState, action)
+        let newState = self.reducer(currentState, action)
         let stateChanged = newState != state
         if stateChanged {
-            state = newState
+            self.state = newState
         }
-
+        
         // Execute middleware asynchronously
         Task { @MainActor in
             if let newAction = await middleware(stateChanged ? newState : self.state, action, environment) {
